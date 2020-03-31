@@ -16,10 +16,10 @@ export class TemplateFormComponent implements OnInit {
   ngOnInit() {
   }
 
-  onSubmit(form){
+  onSubmit(form) {
     console.log(form);
 
-    //console.log(this.usuario)
+    // console.log(this.usuario)
   }
 
 }
