@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { TemplateFormComponent } from './template-form/template-form.component';
 import { DataFormModule } from './data-form/data-form.module';
 import { FormDebugComponent } from './form-debug/form-debug.component';
+import { CampoControlErroComponent } from './campo-control-erro/campo-control-erro.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TemplateFormComponent,
-    FormDebugComponent
+    FormDebugComponent,
+    CampoControlErroComponent
   ],
   imports: [
     BrowserModule,
