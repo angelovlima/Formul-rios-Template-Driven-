@@ -3,18 +3,19 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TemplateFormComponent } from './template-form.component';
 import { HttpClientModule } from '@angular/common/http';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
   declarations: [
     TemplateFormComponent
-    // O form dubug component foi declarado no app module 
     
   ],
   imports: [
     CommonModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    SharedModule
 
   ]
 })

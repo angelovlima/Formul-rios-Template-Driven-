@@ -4,18 +4,14 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TemplateFormComponent } from './template-form/template-form.component';
 import { DataFormModule } from './data-form/data-form.module';
-import { FormDebugComponent } from './form-debug/form-debug.component';
-import { CampoControlErroComponent } from './campo-control-erro/campo-control-erro.component';
 import { HttpClientModule } from '@angular/common/http';
+import { TemplateFormModule } from './template-form/template-form.module';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    TemplateFormComponent,
-    FormDebugComponent,
-    CampoControlErroComponent
+    AppComponent
+    
   ],
   imports: [
     BrowserModule,
@@ -23,7 +19,8 @@ import { HttpClientModule } from '@angular/common/http';
     ReactiveFormsModule,
     AppRoutingModule,
     DataFormModule,
-    HttpClientModule
+    HttpClientModule,
+    TemplateFormModule
   ],
   providers: [],
   bootstrap: [AppComponent]
