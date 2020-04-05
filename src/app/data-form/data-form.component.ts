@@ -1,3 +1,5 @@
+import { EstadoBr } from '../shared/models/estado-br.model';
+import { DropdownService } from './../shared/services/dropdown.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
@@ -9,15 +11,20 @@ import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@ang
 })
 export class DataFormComponent implements OnInit {
 
-  formulario: FormGroup
+  formulario: FormGroup;
+  estados: EstadoBr[];
 
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
-    
+    private dropdownService: DropdownService
+
     ) { }
 
   ngOnInit() {
+
+    this.dropdownService.getEstadosBr()
+    .subscribe(dados => {this.estados = dados; console.log(dados);})
 
     /*  this.formulario = new FormGroup({
       nome: new FormControl(null),
@@ -45,18 +52,32 @@ export class DataFormComponent implements OnInit {
   onSubmit(){
     console.log(this.formulario.value);
 
-    // console.log(this.usuario)
+    if (this.formulario.valid){
 
-    //enderecoServer/formUsuario é um endereço falso criado para simularar um envio de dados ao servidor
-    //Foi substituído por um Web service 
-    this.http.post('https://httpbin.org/post', JSON.stringify(this.formulario.value))
-      .subscribe(dados => {
-        console.log(dados);
-        this.resetar()
-      },
-      (error: any) => alert('erro'));
+      this.http
+        .post('https://httpbin.org/post', JSON.stringify(this.formulario.value))
+        .subscribe(dados => {
+          console.log(dados);
+          this.resetar();
+        },
+        (error: any) => alert('erro'));
+    } else {
+      this.verificaValidacoesForm(this.formulario);
+
+    }
   }
 
+  verificaValidacoesForm(formGroup: FormGroup){
+    Object.keys(formGroup.controls).forEach(campo => {
+      console.log(campo);
+      const controle = formGroup.get(campo);
+      controle.markAsDirty();
+      if (controle instanceof FormGroup){
+        this.verificaValidacoesForm(controle);
+      }
+
+    })
+  }
   resetar(){
     this.formulario.reset();
   }
@@ -70,7 +91,7 @@ export class DataFormComponent implements OnInit {
 
   verificaValidTouched(campo: string){
 
-      return !this.formulario.get(campo).valid && this.formulario.get(campo).touched
+      return !this.formulario.get(campo).valid && (this.formulario.get(campo).touched || this.formulario.get(campo).dirty)
   }
 
   verificaEmailInvalido(){
@@ -100,7 +121,7 @@ export class DataFormComponent implements OnInit {
         this.http.get(`https://viacep.com.br/ws/${cep}/json`)
           //.map(dados => dados.json())
           .subscribe(dados => this.populaDadosForm(dados));
-          
+
       }
     }
 
@@ -120,7 +141,7 @@ export class DataFormComponent implements OnInit {
 
   populaDadosForm(dados){
 
-  
+
     this.formulario.patchValue({
       endereco: {
         rua: dados.logradouro,
