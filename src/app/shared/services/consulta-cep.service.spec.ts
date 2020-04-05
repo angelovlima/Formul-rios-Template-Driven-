@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DropdownService } from './dropdown.service';
+import { ConsultaCepService } from './consulta-cep.service';
 
-describe('DropdownService', () => {
+describe('ConsultaCepService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: DropdownService = TestBed.get(DropdownService);
+    const service: ConsultaCepService = TestBed.get(ConsultaCepService);
     expect(service).toBeTruthy();
   });
 });

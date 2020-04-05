@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-//import 'rxjs/add/operator/map';
+import { ConsultaCepService } from '../shared/services/consulta-cep.service';
 
 
 @Component({
@@ -14,7 +14,9 @@ export class TemplateFormComponent implements OnInit {
     nome: null,
     email: null
   };
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private cepService: ConsultaCepService) { }
 
   ngOnInit() {
   }
@@ -25,7 +27,7 @@ export class TemplateFormComponent implements OnInit {
     // console.log(this.usuario)
 
     //enderecoServer/formUsuario é um endereço falso criado para simularar um envio de dados ao servidor
-    //Foi substituído por um Web service 
+    //Foi substituído por um Web service
     this.http.post('https://httpbin.org/post', JSON.stringify(form.value))
       .subscribe(dados => console.log(dados));
   }
@@ -33,7 +35,7 @@ export class TemplateFormComponent implements OnInit {
   verificaValidTouched(campo){
     return !campo.valid && campo.touched
   }
-    
+
 
   aplicaCssErro(campo){
     return {
@@ -49,6 +51,11 @@ export class TemplateFormComponent implements OnInit {
     //Nova variável "cep" somente com dígitos.
     cep = cep.replace(/\D/g, '');
 
+    if (cep != null && cep !== '') {
+			this.cepService.consultaCEP(cep)
+			.subscribe(dados => this.populaDadosForm(dados, form));
+		}
+
     //Verifica se campo cep possui valor informado.
     if (cep != "") {
 
@@ -63,7 +70,7 @@ export class TemplateFormComponent implements OnInit {
         this.http.get(`https://viacep.com.br/ws/${cep}/json`)
           //.map(dados => dados.json())
           .subscribe(dados => this.populaDadosForm(dados, form));
-          
+
       }
     }
 
@@ -110,6 +117,6 @@ resetaDadosForm(formulario){
   });
 }
 
-  
+
 
 }
