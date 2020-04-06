@@ -1,3 +1,4 @@
+import { VerificaEmailService } from './services/verifica-email.service';
 import { EstadoBr } from '../shared/models/estado-br.model';
 import { DropdownService } from './../shared/services/dropdown.service';
 import { HttpClient } from '@angular/common/http';
@@ -26,7 +27,8 @@ export class DataFormComponent implements OnInit {
 		private formBuilder: FormBuilder,
 		private http: HttpClient,
 		private dropdownService: DropdownService,
-		private cepService: ConsultaCepService
+    private cepService: ConsultaCepService,
+    private verificaEmailService: VerificaEmailService,
 
 		) { }
 
@@ -50,10 +52,11 @@ export class DataFormComponent implements OnInit {
 
 		this.formulario = this.formBuilder.group({
 			nome: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(35)]],
-			email: [null, [Validators.required, Validators.email]],
+      email: [null, [Validators.required, Validators.email], this.validarEmail.bind(this)],
+      confirmarEmail: [null, [FormValidations.equalsTo('email')]],
 
 			endereco: this.formBuilder.group({
-				cep: [null, Validators.required],
+				cep: [null, [Validators.required, FormValidations.cepValidator]],
 				numero: [null, Validators.required],
 				complemento: [null],
 				rua: [null, Validators.required],
@@ -76,7 +79,7 @@ export class DataFormComponent implements OnInit {
 
   buildFrameworks() {
     const values = this.frameworks.map(v => new FormControl(false));
-    return this.formBuilder.array(values);
+    return this.formBuilder.array(values, FormValidations.requiredMinCheckbox(1));
   }
 
 	onSubmit(){
@@ -135,7 +138,14 @@ export class DataFormComponent implements OnInit {
 			return (
         !this.formulario.get(campo).valid &&
         (this.formulario.get(campo).touched || this.formulario.get(campo).dirty))
-	}
+  }
+
+  verificaRequired(campo: string){
+
+    return (
+      this.formulario.get(campo).hasError('required') &&
+      (this.formulario.get(campo).touched || this.formulario.get(campo).dirty))
+}
 
 	verificaEmailInvalido(){
 		let campoEmail = this.formulario.get('email')
@@ -197,5 +207,11 @@ export class DataFormComponent implements OnInit {
   getFrameworksControls() {
     return this.formulario.get('frameworks') ? (<FormArray>this.formulario.get('frameworks')).controls : null;
   }
+
+  validarEmail(formControl: FormControl) {
+    return this.verificaEmailService.verificarEmail(formControl.value)
+      .pipe(map(emailExiste => emailExiste ? { emailInvalido: true } : null));
+  }
+
 
 }
