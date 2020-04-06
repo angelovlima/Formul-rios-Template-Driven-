@@ -6,6 +6,7 @@ import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@ang
 import { map } from 'rxjs/operators';
 import { ConsultaCepService } from '../shared/services/consulta-cep.service';
 import { Observable } from 'rxjs';
+import { FormValidations } from '../shared/form-validations';
 
 @Component({
 	selector: 'app-data-form',
@@ -19,6 +20,7 @@ export class DataFormComponent implements OnInit {
   cargos: any[];
   tecnologias: any[];
   newsletterOp: any[];
+  frameworks = ['Angular', 'React', 'Vue', 'Sencha'];
 
 	constructor(
 		private formBuilder: FormBuilder,
@@ -65,19 +67,35 @@ export class DataFormComponent implements OnInit {
       tecnologias: [null],
       newsletter: ['s'],
       termos: [null, Validators.pattern('true')],
+      frameworks: this.buildFrameworks()
     });
 
 
 
-	}
+  }
+
+  buildFrameworks() {
+    const values = this.frameworks.map(v => new FormControl(false));
+    return this.formBuilder.array(values);
+  }
 
 	onSubmit(){
-		console.log(this.formulario.value);
+    //console.log(this.formulario);
+
+    let valueSubmit = Object.assign({}, this.formulario.value);
+
+    valueSubmit = Object.assign(valueSubmit, {
+      frameworks: valueSubmit.frameworks
+      .map((v, i) => v ? this.frameworks[i] : null)//se o valor for true, acessa this.frameworks e pega seu valor, senão, retorna null
+      .filter(v => v !== null)//Pega apenas os valores que são diferentes de nulo
+    });
+
+    console.log(valueSubmit)
 
 		if (this.formulario.valid){
 
 			this.http
-				.post('https://httpbin.org/post', JSON.stringify(this.formulario.value)).pipe(
+				.post('https://httpbin.org/post', JSON.stringify({})).pipe(
 				map(res => res))
 				.subscribe(dados => {
 					console.log(dados);
@@ -92,7 +110,7 @@ export class DataFormComponent implements OnInit {
 
 	verificaValidacoesForm(formGroup: FormGroup){
 		Object.keys(formGroup.controls).forEach(campo => {
-			console.log(campo);
+			//console.log(campo);
 			const controle = formGroup.get(campo);
 			controle.markAsDirty();
 			if (controle instanceof FormGroup){
@@ -174,6 +192,10 @@ export class DataFormComponent implements OnInit {
 
   setarTecnologias() {
     this.formulario.get('tecnologias').setValue(['java', 'javascript', 'php']);
+  }
+
+  getFrameworksControls() {
+    return this.formulario.get('frameworks') ? (<FormArray>this.formulario.get('frameworks')).controls : null;
   }
 
 }
