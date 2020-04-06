@@ -15,7 +15,10 @@ import { Observable } from 'rxjs';
 export class DataFormComponent implements OnInit {
 
 	formulario: FormGroup;
-	estados: Observable<EstadoBr[]>;
+  estados: Observable<EstadoBr[]>;
+  cargos: any[];
+  tecnologias: any[];
+  newsletterOp: any[];
 
 	constructor(
 		private formBuilder: FormBuilder,
@@ -28,6 +31,12 @@ export class DataFormComponent implements OnInit {
 	ngOnInit() {
 
     this.estados = this.dropdownService.getEstadosBr();
+
+    this.cargos = this.dropdownService.getCargos();
+
+    this.tecnologias = this.dropdownService.getTecnologias();
+
+    this.newsletterOp = this.dropdownService.getNewsletter();
 
 		/*this.dropdownService.getEstadosBr()
 		.subscribe(dados => {this.estados = dados; console.log(dados);})*/
@@ -48,10 +57,17 @@ export class DataFormComponent implements OnInit {
 				rua: [null, Validators.required],
 				bairro: [null, Validators.required],
 				cidade: [null, Validators.required],
-				estado: [null, Validators.required],
-			})
+        estado: [null, Validators.required],
+        termos: [null, Validators.pattern('true')],
+      }),
 
-		});
+      cargo: [null],
+      tecnologias: [null],
+      newsletter: ['s'],
+      termos: [null, Validators.pattern('true')],
+    });
+
+
 
 	}
 
@@ -98,7 +114,9 @@ export class DataFormComponent implements OnInit {
 
 	verificaValidTouched(campo: string){
 
-			return !this.formulario.get(campo).valid && (this.formulario.get(campo).touched || this.formulario.get(campo).dirty)
+			return (
+        !this.formulario.get(campo).valid &&
+        (this.formulario.get(campo).touched || this.formulario.get(campo).dirty))
 	}
 
 	verificaEmailInvalido(){
@@ -143,6 +161,19 @@ export class DataFormComponent implements OnInit {
 				estado: dados.uf
 			}
 		});
-	}
+  }
+
+  setarCargo(){
+    const cargo = {nome:"Dev", nivel: 'Senior', desc: "Dev Sr"}
+    this.formulario.get('cargo').setValue(cargo)
+  }
+
+  compararCargos(obj1, obj2) {
+    return obj1 && obj2 ? (obj1.nome === obj2.nome && obj1.nivel === obj2.nivel) : obj1 === obj2;
+  }
+
+  setarTecnologias() {
+    this.formulario.get('tecnologias').setValue(['java', 'javascript', 'php']);
+  }
 
 }
